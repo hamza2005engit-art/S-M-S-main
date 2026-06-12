@@ -11,13 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('markes', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('assessment_id')->constrained()->onDelete('cascade');
-            $table->integer('score');
-            $table->timestamps();
-        });
+       Schema::create('marks', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('student_id')->constrained()->onDelete('cascade');
+    $table->foreignId('teacher_id')->constrained()->onDelete('cascade');
+    $table->foreignId('material_id')->constrained()->onDelete('cascade');
+
+    $table->string('type'); // exercise, test, final
+    $table->integer('score');
+
+    $table->timestamps();
+});
     }
 
     /**
@@ -25,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('markes');
+        Schema::dropIfExists('marks');
     }
 };

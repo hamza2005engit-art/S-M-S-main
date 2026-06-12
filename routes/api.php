@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\V1\MarkController;
 use App\Http\Controllers\V1\AttendanceController ;
 use App\Http\Controllers\V1\StudentController;
 use App\Http\Controllers\V1\TeacherController;
@@ -15,6 +15,8 @@ use App\Http\Controllers\V1\ScheduleController;
 use App\Http\Controllers\V1\ScheduleSlotController;
 use App\Http\Controllers\V1\StudyStageController;
 use App\Http\Controllers\V1\ExerciseController;
+use App\Http\Controllers\V1\TeacherStudentController;
+use App\Http\Controllers\V1\BookController;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteUri;
@@ -34,6 +36,86 @@ Route::prefix('v1')->name('api.v1')->group(function () {
     // حذف تمرين
     Route::delete('exercises/{id}', [ExerciseController::class, 'deleteExercise']);
   Route::get('student/exercises', [ExerciseController::class, 'getStudentExercises']);
+
+
+
+
+
+
+
+
+   Route::get('/teacher/students',[TeacherStudentController::class, 'index'] );
+
+Route::get('/teacher/marks', [MarkController::class, 'index']);
+
+Route::middleware('auth:api')->get(
+    '/student/{student_id}/report',
+    [MarkController::class, 'studentReport']
+);
+Route::middleware('auth:api')->put(
+    '/teacher/marks/update-by-student',
+    [MarkController::class, 'updateByStudent']
+);
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/teacher/marks', [MarkController::class, 'store']);
+});
+    Route::middleware('auth:api')->get(
+    '/teacher/marks/summary',
+    [MarkController::class, 'teacherMarks']
+);
+Route::middleware('auth:api')->get(
+    '/student/my-marks',
+    [MarkController::class, 'myMarks']
+);
+
+    Route::get('/teacher/marks/student/{student_id}', [MarkController::class, 'studentMarks']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/{id}', [BookController::class, 'show']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/books', [BookController::class, 'store']);
+    Route::put('/books/{id}', [BookController::class, 'update']);
+    Route::delete('/books/{id}', [BookController::class, 'destroy']);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
 
 
     Route::post('register', [AuthController::class, 'register'])->name('register');
