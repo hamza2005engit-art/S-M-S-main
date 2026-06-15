@@ -17,6 +17,8 @@ use App\Http\Controllers\V1\StudyStageController;
 use App\Http\Controllers\V1\ExerciseController;
 use App\Http\Controllers\V1\TeacherStudentController;
 use App\Http\Controllers\V1\BookController;
+use App\Http\Controllers\V1\AdminMarkController;
+use App\Http\Controllers\V1\AdminBookController;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteUri;
@@ -29,6 +31,12 @@ Route::get('/user', function (Request $request) {
 
 
 Route::prefix('v1')->name('api.v1')->group(function () {
+
+
+
+
+
+
   Route::post('exercises', [ExerciseController::class, 'store']);
   Route::get('teacher/exercises', [ExerciseController::class, 'getTeacherExercises']);
       Route::put('exercises/{id}', [ExerciseController::class, 'updateExercise']);
@@ -36,13 +44,6 @@ Route::prefix('v1')->name('api.v1')->group(function () {
     // حذف تمرين
     Route::delete('exercises/{id}', [ExerciseController::class, 'deleteExercise']);
   Route::get('student/exercises', [ExerciseController::class, 'getStudentExercises']);
-
-
-
-
-
-
-
 
    Route::get('/teacher/students',[TeacherStudentController::class, 'index'] );
 
@@ -70,26 +71,6 @@ Route::middleware('auth:api')->get(
 );
 
     Route::get('/teacher/marks/student/{student_id}', [MarkController::class, 'studentMarks']);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 Route::get('/books', [BookController::class, 'index']);
@@ -178,4 +159,32 @@ Route::middleware('auth:api')->group(function () {
  
    Route::put('take_attendance/bulk', [AttendanceController::class, 'takeAttendance'])->name('attendance.take');
    Route::get('attendance/{section}/{studyStage}', [AttendanceController::class, 'getAttendance'])->name('attendance.get');
+
+
+
+
+
+
+
+
+
+
+   //
+
+Route::middleware('auth:api')->prefix('admin')->group(function () {
+    Route::get('/marks', [AdminMarkController::class, 'index']);
+    Route::post('/marks', [AdminMarkController::class, 'store']);
+    Route::put('/marks/{id}', [AdminMarkController::class, 'update']);
+    Route::delete('/marks/{id}', [AdminMarkController::class, 'destroy']);
+    Route::get('/student/{student_id}/report', [AdminMarkController::class, 'studentReport']);
+});
+   //
+   
+
+Route::middleware('auth:api')->prefix('admin')->group(function () {
+    Route::post('/books', [AdminBookController::class, 'store']);
+    Route::put('/books/{id}', [AdminBookController::class, 'update']);
+    Route::delete('/books/{id}', [AdminBookController::class, 'destroy']);
+});
+   //
 });
