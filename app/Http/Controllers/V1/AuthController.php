@@ -51,10 +51,23 @@ class AuthController
         }
         $user->save();
         $token = JWTAuth::fromUser($user);
+        // if($user->hasRole('teacher')){
+        //     $material = $user->teacher->materials()->get();
+        //     $salary = $user->teacher->salaries()->get();
+        //     $section = $user->teacher->sections()->get();
+        //     $grade = $user->teacher->sections()->with('grade')->get()->pluck('grade')->unique('id');
+        // }
+        // if($user->hasRole('admin')) {
+        //     $salary = $user->admin->salaries()->get();
+        // }
 
         return response()->json([
             'user' =>  new UserResource($user),
-            'token' => $token
+            'token' => $token,
+            // 'material'=> $material ?? null,
+            // 'salary'=> $salary ?? null,
+            // 'section'=> $section ?? null,
+            // 'grade'=>$grade ?? null
         ], 201);
     }
 
@@ -109,9 +122,29 @@ class AuthController
             ], 403);
         }
 
+        $material = null;
+        $salary = null;
+        $section = null;
+        $grade = null;
+
+        if ($user->hasRole('teacher') && $user->teacher) {
+            $material = $user->teacher->materials()->get();
+            $salary   = $user->teacher->salaries()->get();
+            $section  = $user->teacher->sections()->get();
+            $grade    = $user->teacher->sections()->with('studyStage')->get()->pluck('studyStage')->unique('id')->values();
+        }
+
+        if ($user->hasRole('admin') && $user->admin) {
+            $salary = $user->admin->salaries()->get();
+        }
+
         return response()->json([
-            'token' => $token,
-            'user' => new UserResource($user),
+            'token'    => $token,
+            'user'     => new ProfileResource($user),
+            'material' => $material,
+            'salary'   => $salary,
+            'section'  => $section,
+            'grade'    => $grade
         ], 200);
     }
 

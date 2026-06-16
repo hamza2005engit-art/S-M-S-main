@@ -1,6 +1,7 @@
 <?php
+
 use App\Http\Controllers\V1\MarkController;
-use App\Http\Controllers\V1\AttendanceController ;
+use App\Http\Controllers\V1\AttendanceController;
 use App\Http\Controllers\V1\StudentController;
 use App\Http\Controllers\V1\TeacherController;
 use App\Http\Controllers\V1\SectionController;
@@ -32,71 +33,50 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('v1')->name('api.v1')->group(function () {
 
+    Route::post('exercises', [ExerciseController::class, 'store']);
+    Route::get('teacher/exercises', [ExerciseController::class, 'getTeacherExercises']);
+    Route::put('exercises/{id}', [ExerciseController::class, 'updateExercise']);
 
-
-
-
-
-  Route::post('exercises', [ExerciseController::class, 'store']);
-  Route::get('teacher/exercises', [ExerciseController::class, 'getTeacherExercises']);
-      Route::put('exercises/{id}', [ExerciseController::class, 'updateExercise']);
-    
     // حذف تمرين
     Route::delete('exercises/{id}', [ExerciseController::class, 'deleteExercise']);
-  Route::get('student/exercises', [ExerciseController::class, 'getStudentExercises']);
+    Route::get('student/exercises', [ExerciseController::class, 'getStudentExercises']);
 
-   Route::get('/teacher/students',[TeacherStudentController::class, 'index'] );
+    Route::get('/teacher/students', [TeacherStudentController::class, 'index']);
 
-Route::get('/teacher/marks', [MarkController::class, 'index']);
+    Route::get('/teacher/marks', [MarkController::class, 'index']);
 
-Route::middleware('auth:api')->get(
-    '/student/{student_id}/report',
-    [MarkController::class, 'studentReport']
-);
-Route::middleware('auth:api')->put(
-    '/teacher/marks/update-by-student',
-    [MarkController::class, 'updateByStudent']
-);
-
-Route::middleware('auth:api')->group(function () {
-    Route::post('/teacher/marks', [MarkController::class, 'store']);
-});
     Route::middleware('auth:api')->get(
-    '/teacher/marks/summary',
-    [MarkController::class, 'teacherMarks']
-);
-Route::middleware('auth:api')->get(
-    '/student/my-marks',
-    [MarkController::class, 'myMarks']
-);
+        '/student/{student_id}/report',
+        [MarkController::class, 'studentReport']
+    );
+    Route::middleware('auth:api')->put(
+        '/teacher/marks/update-by-student',
+        [MarkController::class, 'updateByStudent']
+    );
+
+    Route::middleware('auth:api')->group(function () {
+        Route::post('/teacher/marks', [MarkController::class, 'store']);
+    });
+    Route::middleware('auth:api')->get(
+        '/teacher/marks/summary',
+        [MarkController::class, 'teacherMarks']
+    );
+    Route::middleware('auth:api')->get(
+        '/student/my-marks',
+        [MarkController::class, 'myMarks']
+    );
 
     Route::get('/teacher/marks/student/{student_id}', [MarkController::class, 'studentMarks']);
 
 
-Route::get('/books', [BookController::class, 'index']);
-Route::get('/books/{id}', [BookController::class, 'show']);
+    Route::get('/books', [BookController::class, 'index']);
+    Route::get('/books/{id}', [BookController::class, 'show']);
 
-Route::middleware('auth:api')->group(function () {
-    Route::post('/books', [BookController::class, 'store']);
-    Route::put('/books/{id}', [BookController::class, 'update']);
-    Route::delete('/books/{id}', [BookController::class, 'destroy']);
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
+    Route::middleware('auth:api')->group(function () {
+        Route::post('/books', [BookController::class, 'store']);
+        Route::put('/books/{id}', [BookController::class, 'update']);
+        Route::delete('/books/{id}', [BookController::class, 'destroy']);
+    });
 
 
     Route::post('register', [AuthController::class, 'register'])->name('register');
@@ -154,37 +134,29 @@ Route::middleware('auth:api')->group(function () {
     Route::put('update_schedule/{id}', [ScheduleController::class, 'updateSchedule'])->name('schedule.update');
     Route::delete('delete_schedule/{id}', [ScheduleController::class, 'deleteSchedule'])->name('schedule.delete');
 
-            Route::post('schedule_slot/sync', [ScheduleSlotController::class, 'scheduleSlotSync'])->name('schedule.create_slots_sync');
-        Route::get('my_schedule/{day?}', [ScheduleController::class, 'mySchedule'])->name('schedule.my');
- 
-   Route::put('take_attendance/bulk', [AttendanceController::class, 'takeAttendance'])->name('attendance.take');
-   Route::get('attendance/{section}/{studyStage}', [AttendanceController::class, 'getAttendance'])->name('attendance.get');
+    Route::post('schedule_slot/sync', [ScheduleSlotController::class, 'scheduleSlotSync'])->name('schedule.create_slots_sync');
+    Route::get('my_schedule/{day?}', [ScheduleController::class, 'mySchedule'])->name('schedule.my');
+
+    Route::put('take_attendance/bulk', [AttendanceController::class, 'takeAttendance'])->name('attendance.take');
+    Route::get('attendance/{section}/{studyStage}', [AttendanceController::class, 'getAttendance'])->name('attendance.get');
 
 
+    //
+
+    Route::middleware('auth:api')->prefix('admin')->group(function () {
+        Route::get('/marks', [AdminMarkController::class, 'index']);
+        Route::post('/marks', [AdminMarkController::class, 'store']);
+        Route::put('/marks/{id}', [AdminMarkController::class, 'update']);
+        Route::delete('/marks/{id}', [AdminMarkController::class, 'destroy']);
+        Route::get('/student/{student_id}/report', [AdminMarkController::class, 'studentReport']);
+    });
+    //
 
 
-
-
-
-
-
-
-   //
-
-Route::middleware('auth:api')->prefix('admin')->group(function () {
-    Route::get('/marks', [AdminMarkController::class, 'index']);
-    Route::post('/marks', [AdminMarkController::class, 'store']);
-    Route::put('/marks/{id}', [AdminMarkController::class, 'update']);
-    Route::delete('/marks/{id}', [AdminMarkController::class, 'destroy']);
-    Route::get('/student/{student_id}/report', [AdminMarkController::class, 'studentReport']);
-});
-   //
-   
-
-Route::middleware('auth:api')->prefix('admin')->group(function () {
-    Route::post('/books', [AdminBookController::class, 'store']);
-    Route::put('/books/{id}', [AdminBookController::class, 'update']);
-    Route::delete('/books/{id}', [AdminBookController::class, 'destroy']);
-});
-   //
+    Route::middleware('auth:api')->prefix('admin')->group(function () {
+        Route::post('/books', [AdminBookController::class, 'store']);
+        Route::put('/books/{id}', [AdminBookController::class, 'update']);
+        Route::delete('/books/{id}', [AdminBookController::class, 'destroy']);
+    });
+    //
 });
