@@ -19,6 +19,7 @@ use App\Http\Controllers\V1\TeacherStudentController;
 use App\Http\Controllers\V1\BookController;
 use App\Http\Controllers\V1\AdminMarkController;
 use App\Http\Controllers\V1\AdminBookController;
+use App\Http\Controllers\V1\UserManagementController;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteUri;
@@ -185,6 +186,26 @@ Route::middleware('auth:api')->prefix('admin')->group(function () {
     Route::post('/books', [AdminBookController::class, 'store']);
     Route::put('/books/{id}', [AdminBookController::class, 'update']);
     Route::delete('/books/{id}', [AdminBookController::class, 'destroy']);
+        Route::get('/users', [UserManagementController::class,'index']);
+        Route::get('/users/pending', [UserManagementController::class, 'pendingUsers']);
+      Route::get('/admin/users/{id}',[UserManagementController::class,'show']);
+      Route::get('/teachers', [UserManagementController::class, 'teachers']);
+      Route::get('/teachers/{id}', [UserManagementController::class, 'showTeacher']);
+      Route::put('/teachers/{id}', [UserManagementController::class, 'updateTeacher']);
+Route::delete('/teachers/{id}', [UserManagementController::class, 'deleteTeacher']);
+
+///
+Route::get('/students', [UserManagementController::class, 'students']);
+Route::get('/students/{id}', [UserManagementController::class, 'showStudent']);
+Route::put('/students/{id}', [UserManagementController::class, 'updateStudent']);
+Route::delete('/students/{id}', [UserManagementController::class, 'deleteStudent']);
+///
+        Route::get('/supervisors', [UserManagementController::class, 'supervisors']);
+        Route::get('/supervisors/{id}', [UserManagementController::class, 'showSupervisor']);
+        Route::put('/supervisors/{id}', [UserManagementController::class, 'updateSupervisor']);
+        Route::delete('/supervisors/{id}', [UserManagementController::class, 'deleteSupervisor']);
+////
 });
    //
+
 });
