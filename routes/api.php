@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\MarkController;
 use App\Http\Controllers\V1\AttendanceController;
 use App\Http\Controllers\V1\StudentController;
@@ -20,11 +22,8 @@ use App\Http\Controllers\V1\TeacherStudentController;
 use App\Http\Controllers\V1\BookController;
 use App\Http\Controllers\V1\AdminMarkController;
 use App\Http\Controllers\V1\AdminBookController;
+use App\Http\Controllers\V1\ReportController;
 use App\Http\Controllers\V1\UserManagementController;
-use App\Models\Attendance;
-use Illuminate\Http\Request;
-use Illuminate\Routing\RouteUri;
-use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -33,6 +32,20 @@ Route::get('/user', function (Request $request) {
 
 
 Route::prefix('v1')->name('api.v1')->group(function () {
+
+
+// Route::get(
+//     'reports',
+//     ReportController::class
+// );
+
+// Route::get(
+//     'reports/{report}/download',
+//     [ReportController::class,'download']
+// );
+
+
+
 
     Route::post('exercises', [ExerciseController::class, 'store']);
     Route::get('teacher/exercises', [ExerciseController::class, 'getTeacherExercises']);
@@ -142,19 +155,6 @@ Route::prefix('v1')->name('api.v1')->group(function () {
     Route::get('attendance/{section}/{studyStage}', [AttendanceController::class, 'getAttendance'])->name('attendance.get');
     Route::get('/student/attendance/rate', [UserManagementController::class, 'studentAttendanceRatePerDay']);
     Route::get('/get_salary', [UserManagementController::class, 'getSalary']);
-
-    //
-
-    Route::middleware('auth:api')->prefix('admin')->group(function () {
-        Route::get('/marks', [AdminMarkController::class, 'index']);
-        Route::post('/marks', [AdminMarkController::class, 'store']);
-        Route::put('/marks/{id}', [AdminMarkController::class, 'update']);
-        Route::delete('/marks/{id}', [AdminMarkController::class, 'destroy']);
-        Route::get('/student/{student_id}/report', [AdminMarkController::class, 'studentReport']);
-    });
-    //
-
-
 
     //
 

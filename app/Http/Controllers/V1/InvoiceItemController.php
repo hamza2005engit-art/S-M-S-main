@@ -35,7 +35,7 @@ class InvoiceItemController extends Controller
 
     public function getInvoiceItems($invoice_id)
     {
-        $invoiceItems = InvoiceItem::where('invoice_id', $invoice_id)->get();
+        $invoiceItems = InvoiceItem::where('invoice_id', $invoice_id)->with('feeType:id,name')->get();
         return response()->json(['invoice_items' => $invoiceItems]);
     }
 
