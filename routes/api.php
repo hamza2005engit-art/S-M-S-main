@@ -140,7 +140,8 @@ Route::prefix('v1')->name('api.v1')->group(function () {
 
     Route::put('take_attendance/bulk', [AttendanceController::class, 'takeAttendance'])->name('attendance.take');
     Route::get('attendance/{section}/{studyStage}', [AttendanceController::class, 'getAttendance'])->name('attendance.get');
-
+    Route::get('/student/attendance/rate', [UserManagementController::class, 'studentAttendanceRatePerDay']);
+    Route::get('/get_salary', [UserManagementController::class, 'getSalary']);
 
     //
 
@@ -155,43 +156,45 @@ Route::prefix('v1')->name('api.v1')->group(function () {
 
 
 
-   //
+    //
 
-Route::middleware('auth:api')->prefix('admin')->group(function () {
-    Route::get('/marks', [AdminMarkController::class, 'index']);
-    Route::post('/marks', [AdminMarkController::class, 'store']);
-    Route::put('/marks/{id}', [AdminMarkController::class, 'update']);
-    Route::delete('/marks/{id}', [AdminMarkController::class, 'destroy']);
-    Route::get('/student/{student_id}/report', [AdminMarkController::class, 'studentReport']);
-});
-   //
-   
+    Route::middleware('auth:api')->prefix('admin')->group(function () {
+        Route::get('/marks', [AdminMarkController::class, 'index']);
+        Route::post('/marks', [AdminMarkController::class, 'store']);
+        Route::put('/marks/{id}', [AdminMarkController::class, 'update']);
+        Route::delete('/marks/{id}', [AdminMarkController::class, 'destroy']);
+        Route::get('/student/{student_id}/report', [AdminMarkController::class, 'studentReport']);
+    });
+    //
 
-Route::middleware('auth:api')->prefix('admin')->group(function () {
-    Route::post('/books', [AdminBookController::class, 'store']);
-    Route::put('/books/{id}', [AdminBookController::class, 'update']);
-    Route::delete('/books/{id}', [AdminBookController::class, 'destroy']);
-        Route::get('/users', [UserManagementController::class,'index']);
+
+    Route::middleware('auth:api')->prefix('admin')->group(function () {
+        Route::post('/books', [AdminBookController::class, 'store']);
+        Route::put('/books/{id}', [AdminBookController::class, 'update']);
+        Route::delete('/books/{id}', [AdminBookController::class, 'destroy']);
+        Route::get('/users', [UserManagementController::class, 'index']);
         Route::get('/users/pending', [UserManagementController::class, 'pendingUsers']);
-      Route::get('/admin/users/{id}',[UserManagementController::class,'show']);
-      Route::get('/teachers', [UserManagementController::class, 'teachers']);
-      Route::get('/teachers/{id}', [UserManagementController::class, 'showTeacher']);
-      Route::put('/teachers/{id}', [UserManagementController::class, 'updateTeacher']);
-Route::delete('/teachers/{id}', [UserManagementController::class, 'deleteTeacher']);
+        Route::get('/admin/users/{id}', [UserManagementController::class, 'show']);
+        Route::get('/teachers', [UserManagementController::class, 'teachers']);
+        Route::get('/teachers/{id}', [UserManagementController::class, 'showTeacher']);
+        Route::put('/teachers/{id}', [UserManagementController::class, 'updateTeacher']);
+        Route::delete('/teachers/{id}', [UserManagementController::class, 'deleteTeacher']);
 
-///
-Route::get('/students', [UserManagementController::class, 'students']);
-Route::get('/students/{id}', [UserManagementController::class, 'showStudent']);
-Route::put('/students/{id}', [UserManagementController::class, 'updateStudent']);
-Route::delete('/students/{id}', [UserManagementController::class, 'deleteStudent']);
-///
+        Route::get('/count/teacher', [UserManagementController::class, 'countTeacher']);
+        Route::get('/count/student', [UserManagementController::class, 'countStudent']);
+        ///
+        Route::get('/students', [UserManagementController::class, 'students']);
+        Route::get('/students/{id}', [UserManagementController::class, 'showStudent']);
+        Route::put('/students/{id}', [UserManagementController::class, 'updateStudent']);
+        Route::delete('/students/{id}', [UserManagementController::class, 'deleteStudent']);
+        ///
         Route::get('/supervisors', [UserManagementController::class, 'supervisors']);
         Route::get('/supervisors/{id}', [UserManagementController::class, 'showSupervisor']);
         Route::put('/supervisors/{id}', [UserManagementController::class, 'updateSupervisor']);
         Route::delete('/supervisors/{id}', [UserManagementController::class, 'deleteSupervisor']);
-////
-});
-   //
+        ////
+    });
+    //
 
     Route::middleware('auth:api')->prefix('admin')->group(function () {
         Route::post('/books', [AdminBookController::class, 'store']);

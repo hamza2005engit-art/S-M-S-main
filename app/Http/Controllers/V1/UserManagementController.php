@@ -9,6 +9,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\UserResource;
 use App\Models\Student;
 use App\Models\SuperAdmin;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 class UserManagementController extends Controller
 {
 public function index()
@@ -470,4 +473,72 @@ public function deleteSupervisor($id)
             'data' => new UserResource($user)
         ]);
     }
+
+    public function countTeacher() {
+        $teachers = Teacher::count();
+        return response()->json(
+            [
+                'teachers'=>$teachers
+            ],
+            200
+        );
+    }
+    public function countStudent() {
+
+        $student = Student::count();
+        return response()->json(
+            [
+                'students'=>$student
+            ],
+            200
+        );
+    }
+
+    public function studentAttendanceRatePerDay()
+{
+    $startOfWeek = Carbon::now()->startOfWeek(Carbon::SUNDAY)->format('Y-m-d');
+    $endOfWeek = Carbon::now()->endOfWeek(Carbon::THURSDAY)->format('Y-m-d');
+
+    $dailyStats = DB::table('attendances')
+        ->whereBetween('date', [$startOfWeek, $endOfWeek])
+        ->select(
+            'date',
+            DB::raw('COUNT(*) as total'),
+            DB::raw("SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as present")
+        )
+        ->groupBy('date')
+        ->orderBy('date', 'asc')
+        ->get();
+
+    // تحويل البيانات إلى نسبة مئوية لكل يوم
+    $chartData = $dailyStats->map(function ($item) {
+        $rate = $item->total > 0 ? ($item->present / $item->total) * 100 : 0;
+        return [
+            'day' => Carbon::parse($item->date)->format('l'), // يعيد اسم اليوم بالإنجليزية (Sunday, Monday...)
+            'date' => $item->date,
+            'rate' => round($rate, 1) // النسبة المئوية لليوم
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'data' => $chartData
+    ]);
+}
+public function getSalary() {
+    $user = Auth::user();
+    $salary = null;
+    if($user->hasRole('teacher')) {
+        $salary = $user->teacher?->salaries()->latest()->first();
+    }
+    if($user->hasRole('admin')) {
+        $salary = $user->admin?->salaries()->latest()->first();
+    }
+    return response()->json(
+        [
+            'salary'=>$salary
+        ],
+        200
+    );
+}
 }

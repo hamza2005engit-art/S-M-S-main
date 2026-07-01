@@ -7,6 +7,7 @@ use App\Models\PasswordResetOtp;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Resources\V1\ProfileResource;
 use App\Http\Resources\V1\UserResource;
+use App\Models\Teacher;
 use App\Notifications\Mail\SendCodeResetPassword;
 use App\Services\V1\ProfileService;
 use Illuminate\Http\Request;
@@ -129,13 +130,13 @@ class AuthController
 
         if ($user->hasRole('teacher') && $user->teacher) {
             $material = $user->teacher->materials()->get();
-            $salary   = $user->teacher->salaries()->get();
+            $salary   = $user->teacher->salary;
             $section  = $user->teacher->sections()->get();
             $grade    = $user->teacher->sections()->with('studyStage')->get()->pluck('studyStage')->unique('id')->values();
         }
 
         if ($user->hasRole('admin') && $user->admin) {
-            $salary = $user->admin->salaries()->get();
+            $salary = $user->admin->salary;
         }
 
         return response()->json([
@@ -144,7 +145,7 @@ class AuthController
             'material' => $material,
             'salary'   => $salary,
             'section'  => $section,
-            'grade'    => $grade
+            'grade'    => $grade,
         ], 200);
     }
 
