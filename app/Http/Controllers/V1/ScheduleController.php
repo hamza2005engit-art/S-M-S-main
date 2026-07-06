@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Schedule;
 use App\Models\ScheduleSlot;
 use App\Services\V1\MyScheduleService;
+use App\Services\V1\ScheduleOfSectionService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +36,7 @@ class ScheduleController extends Controller
     public function getSchedule($id)
     {
         $schedule = Schedule::with('slots')->findOrFail($id);
-        if(!$schedule) {
+        if (!$schedule) {
             return response()->json(['message' => 'Schedule not found'], 404);
         }
         return response()->json(['data' => $schedule], 200);
@@ -82,14 +83,21 @@ class ScheduleController extends Controller
         return response()->json(['message' => 'Schedule deleted successfully'], 200);
     }
 
-    public function mySchedule($day = null){
+    public function mySchedule($day = null)
+    {
         $user = auth('api')->user();
-       // return $user ;
-        if(!$day){
-        $day = Carbon::now()->dayName ;
+        // return $user ;
+        if (!$day) {
+            $day = Carbon::now()->dayName;
         }
         $schedules = app(MyScheduleService::class)->getMySchedule($user, $day);
 
-         return response()->json(['data' => $schedules], 200);
+        return response()->json(['data' => $schedules], 200);
+    }
+
+    public function scheduleOfSection($section_id, $study_stage_id)
+    {
+        $schedules = app(ScheduleOfSectionService::class)->getScheduleOfSection($section_id, $study_stage_id);
+        return response()->json(['data' => $schedules], 200);
     }
 }

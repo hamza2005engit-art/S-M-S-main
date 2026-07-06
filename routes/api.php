@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MaterialController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\MarkController;
@@ -150,6 +151,7 @@ Route::prefix('v1')->name('api.v1')->group(function () {
 
     Route::post('schedule_slot/sync', [ScheduleSlotController::class, 'scheduleSlotSync'])->name('schedule.create_slots_sync');
     Route::get('my_schedule/{day?}', [ScheduleController::class, 'mySchedule'])->name('schedule.my');
+    Route::get('schedul_of_section/{section_id}/{study_stage_id}', [ScheduleController::class, 'scheduleOfSection'])->name('schedule.section');
 
     Route::put('take_attendance/bulk', [AttendanceController::class, 'takeAttendance'])->name('attendance.take');
     Route::get('attendance/{section}/{studyStage}', [AttendanceController::class, 'getAttendance'])->name('attendance.get');
@@ -202,5 +204,9 @@ Route::prefix('v1')->name('api.v1')->group(function () {
         Route::delete('/books/{id}', [AdminBookController::class, 'destroy']);
     });
     //
+
+    Route::post('create_material', [MaterialController::class, 'createMaterial'])->name('material.create');
+    Route::get('get_material/{study_stage_id?}', [MaterialController::class, 'getMaterial'])->name('material.get');
+
 
 });
