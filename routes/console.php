@@ -10,10 +10,10 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 
-// Schedule::command('salary:generate')
-//    ->everyMinute();// ->monthlyOn(11, '15:49');
+Schedule::command('salary:generate')
+   ->everyMinute();// ->monthlyOn(11, '15:49');
 
-    Schedule::command('attendance:generate')->everyMinute();
-        // ->weekdays("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday")
-        // ->at('06:00');
- Schedule::job(new GenerateReportsJob())->dailyAt('00:00');
+//     Schedule::command('attendance:generate')->everyMinute();
+//         // ->weekdays("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday")
+//         // ->at('06:00');
+//  Schedule::job(new GenerateReportsJob())->dailyAt('00:00');

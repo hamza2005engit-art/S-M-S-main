@@ -110,7 +110,7 @@ public function store(Request $request)
 
     $mark = Mark::create([
         'student_id' => $request->student_id,
-        'teacher_id' => $teacher->id,   
+        'teacher_id' => $teacher->id,
         'material_id' => $request->material_id,
         'type' => $request->type,
         'score' => $request->score,
@@ -215,14 +215,14 @@ public function studentReport($student_id)
 }
 public function myMarks()
 {
-    
+
     $user = auth('api')->user();
 
     if (!$user) {
         return response()->json(['message' => 'Unauthenticated'], 401);
     }
 
-     
+
     $student = \App\Models\Student::where('user_id', $user->id)->first();
 
     if (!$student) {

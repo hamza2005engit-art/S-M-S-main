@@ -14,6 +14,12 @@ class EmployeeSalaryResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $employee = $this->employeeable;
+
+        if ($employee) {
+            $employee->loadMissing('user');
+        }
+
         return [
             'id' => $this->id,
             'employeeable_id' => $this->employeeable_id,
@@ -22,7 +28,7 @@ class EmployeeSalaryResource extends JsonResource
             'date' => $this->date,
             'paid' => $this->paid,
             'paid_at' => $this->paid_at,
-            'user' => new EmployeeResource($this->employeeable),
+            'user' => $employee ? new EmployeeResource($employee) : null,
         ];
     }
 }

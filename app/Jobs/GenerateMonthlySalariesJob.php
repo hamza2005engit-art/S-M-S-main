@@ -2,7 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\Admin;
 use App\Models\EmployeeSalary;
+use App\Models\Teacher;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,21 +24,38 @@ class GenerateMonthlySalariesJob implements ShouldQueue
     }
 
     public function handle(): void
-    {
-        $employees = User::role(['admin', 'teacher'])->with('roles')->get();
+{
+    $today = Carbon::today();
 
-        foreach ($employees as $employee) {
-            EmployeeSalary::updateOrCreate(
-                [
-                    'employeeable_id' => $employee->id,
-                    'employeeable_type' => $employee->getRoleNames()->first(),
-                    'date' => Carbon::now()->format('Y-m-d'),
-                ],
-                [
-                    'amount' => $employee->salary,
-                    'paid' => false,
-                ]
-            );
-        }
+    // Generate salaries for admins
+    foreach (Admin::all() as $admin) {
+
+        EmployeeSalary::updateOrCreate(
+            [
+                'employeeable_id'   => $admin->id,
+                'employeeable_type' => 'admin', // أو Admin::class إذا لم تستخدم morphMap
+                'date'              => $today,
+            ],
+            [
+                'salary' => $admin->salary,
+                'paid'   => false,
+            ]
+        );
     }
-}
+
+    // Generate salaries for teachers
+    foreach (Teacher::all() as $teacher) {
+
+        EmployeeSalary::updateOrCreate(
+            [
+                'employeeable_id'   => $teacher->id,
+                'employeeable_type' => 'teacher', // أو Teacher::class إذا لم تستخدم morphMap
+                'date'              => $today,
+            ],
+            [
+                'salary' => $teacher->salary,
+                'paid'   => false,
+            ]
+        );
+    }
+}}

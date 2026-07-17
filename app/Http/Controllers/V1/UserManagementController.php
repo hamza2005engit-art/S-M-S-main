@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\UserResource;
+use App\Models\Admin;
 use App\Models\Student;
 use App\Models\SuperAdmin;
 use Carbon\Carbon;
@@ -18,7 +19,7 @@ public function index()
 {
     $users = User::with('roles')
         ->whereDoesntHave('roles', function ($query) {
-            $query->where('name', 'admin');
+            $query->where('name', 'super_admin');
         })
         ->latest()
         ->get();
@@ -337,7 +338,7 @@ public function deleteStudent($id)
 
 public function supervisors()
 {
-    $supervisors = SuperAdmin::with('user')->latest()->get();
+    $supervisors = Admin::with('user')->latest()->get();
 
     return response()->json([
         'status' => true,

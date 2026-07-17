@@ -56,45 +56,42 @@ class EmployeeSalaryController extends Controller
 
         $employeeSalary->save();
 
+        $employeeSalary = EmployeeSalary::with('employeeable.user')
+            ->findOrFail($employeeSalary->id);
+
         return response()->json([
             'data' => new EmployeeSalaryResource($employeeSalary),
         ], 201);
     }
 
-    public function getSalary($type, $id = null)
-    {
-        if($id){
-            // if ($type === 'admin') {
-            //     $employee = Admin::findOrFail($id);
-            // } else {
-            //     $employee = Teacher::findOrFail($id);
-            // }
-            $employeeSalary = EmployeeSalary::findOrFail($id);
-//$salaries = $employee->salaries()->latest('date')->with('employeeable')->with('user')->get();
-            return new EmployeeSalaryResource($employeeSalary);
-        }
-            $employeeSalaries = EmployeeSalary::whereHasMorph(
-                'employeeable',
-                [Admin::class, Teacher::class],
-                function ($query) use ($type) {
-                    if ($type === 'admin') {
-                        $query->where('employeeable_type', Admin::class);
-                    } else {
-                        $query->where('employeeable_type', Teacher::class);
-                    }
-                }
-            )->latest('date')->paginate(10);
-            return EmployeeSalaryResource::collection($employeeSalaries);
-        // if ($id) {
-        //     $employeeSalary = EmployeeSalary::findOrFail($id);
+   
+public function getSalary($type, $id = null)
+{
+   $employeeType = match ($type) {
+    'admin' => 'admin',
+    'teacher' => 'teacher',
+    default => abort(404),
+};
 
-        //     return new EmployeeSalaryResource($employeeSalary);
-        // }
+    if ($id) {
 
-        // $employeeSalary = EmployeeSalary::orderby('date', 'desc')->paginate(10);
+        $employeeSalary = EmployeeSalary::with('employeeable.user')
+            ->where('employeeable_type', $employeeType)
+            ->findOrFail($id);
 
-        // return EmployeeSalaryResource::collection($employeeSalary);
+        return response()->json([
+            'data' => new EmployeeSalaryResource($employeeSalary),
+        ], 200);
     }
+
+    $employeeSalaries = EmployeeSalary::with('employeeable.user')
+        ->where('employeeable_type', $employeeType)
+        ->latest()
+        ->paginate(10);
+
+    return EmployeeSalaryResource::collection($employeeSalaries);
+}
+
 
     public function paySalary($id)
     {
@@ -110,6 +107,9 @@ class EmployeeSalaryController extends Controller
             'paid' => true,
             'paid_at' => now(),
         ]);
+
+        $employeeSalary = EmployeeSalary::with('employeeable.user')
+            ->findOrFail($id);
 
         return response()->json([
             'data' => new EmployeeSalaryResource($employeeSalary),
@@ -128,6 +128,10 @@ class EmployeeSalaryController extends Controller
         $employeeSalary->update($request->only(['salary', 'date']));
 
         $employeeSalary->save();
+
+        $employeeSalary = EmployeeSalary::with('employeeable.user')
+            ->findOrFail($id);
+
         return response()->json([
             'data' => new EmployeeSalaryResource($employeeSalary),
         ], 200);
@@ -150,7 +154,10 @@ class EmployeeSalaryController extends Controller
             ], 404);
         }
 
-        $salaries = $employee->salaries()->latest('date')->paginate(10);
+        $salaries = $employee->salaries()
+            ->with('employeeable.user')
+            ->latest('date')
+            ->paginate(10);
 
         return EmployeeSalaryResource::collection($salaries);
     }
