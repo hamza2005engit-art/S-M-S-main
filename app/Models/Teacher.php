@@ -24,7 +24,7 @@ class Teacher extends Model
 
     public function sections()
     {
-        return $this->belongsToMany(Section::class, 'teacher_section');
+        return $this->belongsToMany(Section::class, 'teacher_sections');
     }
 
     public function materials()
