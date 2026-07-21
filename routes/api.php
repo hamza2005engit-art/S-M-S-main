@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\MaterialController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\MarkController;
@@ -23,6 +22,7 @@ use App\Http\Controllers\V1\TeacherStudentController;
 use App\Http\Controllers\V1\BookController;
 use App\Http\Controllers\V1\AdminMarkController;
 use App\Http\Controllers\V1\AdminBookController;
+use App\Http\Controllers\V1\MaterialController ;
 use App\Http\Controllers\V1\ReportController;
 use App\Http\Controllers\V1\UserManagementController;
 
@@ -169,8 +169,9 @@ Route::prefix('v1')->name('api.v1')->group(function () {
     });
     //
 
+        Route::get('/students/{id}', [UserManagementController::class, 'showStudent'])->name('show_student');
 
-    Route::middleware('auth:api')->prefix('admin')->group(function () {
+    Route::middleware('auth:api')->group(function () {
         Route::post('/books', [AdminBookController::class, 'store']);
         Route::put('/books/{id}', [AdminBookController::class, 'update']);
         Route::delete('/books/{id}', [AdminBookController::class, 'destroy']);
@@ -184,9 +185,10 @@ Route::prefix('v1')->name('api.v1')->group(function () {
 
         Route::get('/count/teacher', [UserManagementController::class, 'countTeacher']);
         Route::get('/count/student', [UserManagementController::class, 'countStudent']);
+        Route::get('/count/supervisor', [UserManagementController::class, 'countSupervisor']);
+        Route::get('/count/study_stage', [UserManagementController::class, 'countStudyStage']);
         ///
         Route::get('/students', [UserManagementController::class, 'students']);
-        Route::get('/students/{id}', [UserManagementController::class, 'showStudent']);
         Route::put('/students/{id}', [UserManagementController::class, 'updateStudent']);
         Route::delete('/students/{id}', [UserManagementController::class, 'deleteStudent']);
         ///

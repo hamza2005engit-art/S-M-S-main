@@ -64,7 +64,7 @@ class EmployeeSalaryController extends Controller
         ], 201);
     }
 
-   
+
 public function getSalary($type, $id = null)
 {
    $employeeType = match ($type) {
